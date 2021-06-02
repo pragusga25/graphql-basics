@@ -5,6 +5,7 @@ import { GraphQLServer } from 'graphql-yoga';
 // Type definitions (schema)
 const typeDefs = `
   type Query{
+    sayHi(name: String!, friendName: String): String!
     me: User!
     post: Post!
   }
@@ -27,6 +28,11 @@ const typeDefs = `
 // Resolvers
 const resolvers = {
   Query: {
+    sayHi(parent, args, ctx, info) {
+      if (args.name && args.friendName)
+        return `Hi ${args.name} and ${args.friendName}`;
+      else 'Hi everyone';
+    },
     me() {
       return {
         id: 'us123',
