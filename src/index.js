@@ -42,10 +42,30 @@ const posts = [
 ];
 
 const comments = [
-  { id: 'c1', text: 'That is cool book', authorId: 'pou102944' },
-  { id: 'c2', text: 'That is bad book', authorId: 'pou102944' },
-  { id: 'c3', text: 'That is horrible book', authorId: 'pou1021219' },
-  { id: 'c4', text: 'That is awesome book', authorId: 'pou102139' },
+  {
+    id: 'c1',
+    text: 'That is cool book',
+    authorId: 'pou102944',
+    postId: 'dapwo123',
+  },
+  {
+    id: 'c2',
+    text: 'That is bad book',
+    authorId: 'pou102944',
+    postId: 'po123',
+  },
+  {
+    id: 'c3',
+    text: 'That is horrible book',
+    authorId: 'pou1021219',
+    postId: 'poda2123',
+  },
+  {
+    id: 'c4',
+    text: 'That is awesome book',
+    authorId: 'pou102139',
+    postId: 'dapwo123',
+  },
 ];
 
 const typeDefs = `
@@ -70,12 +90,14 @@ const typeDefs = `
     body: String!
     published: Boolean!
     author: User!
+    comments: [Comment!]!
   }
 
   type Comment{
     id: ID!
     text: String!
     author: User!
+    post: Post!
   }
 `;
 
@@ -109,6 +131,9 @@ const resolvers = {
     author(parent) {
       return users.find((user) => user.id === parent.authorId);
     },
+    comments(parent) {
+      return comments.filter((comment) => comment.postId === parent.id);
+    },
   },
   User: {
     posts(parent) {
@@ -121,6 +146,9 @@ const resolvers = {
   Comment: {
     author(parent) {
       return users.find((user) => user.id === parent.authorId);
+    },
+    post(parent) {
+      return posts.find((post) => post.id === parent.postId);
     },
   },
 };
