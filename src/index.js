@@ -16,24 +16,28 @@ const posts = [
     title: 'The Journey',
     body: 'The awesome journey',
     published: true,
+    authorId: 'pou1021219',
   },
   {
     id: 'poda2123',
     title: 'The Coolest',
     body: 'So Cool',
     published: false,
+    authorId: 'pou1021219',
   },
   {
     id: 'po12d2a3',
     title: 'The Cules',
     body: 'An idiot',
     published: false,
+    authorId: 'pou102119',
   },
   {
     id: 'dapwo123',
     title: 'The Alchemist',
     body: 'The fabel',
     published: true,
+    authorId: 'pou102944',
   },
 ];
 
@@ -55,20 +59,21 @@ const typeDefs = `
     title: String!
     body: String!
     published: Boolean!
+    author: User!
   }
 `;
 
 // Resolvers
 const resolvers = {
   Query: {
-    users(parents, args, ctx, info) {
+    users(_, args) {
       if (!args.query) return users;
 
       return users.filter(
         (user) => user.name.toLowerCase() === args.query.toLowerCase()
       );
     },
-    posts(parents, args, ctx, info) {
+    posts(_, args) {
       if (!args.query) return posts;
 
       return posts.filter((post) => {
@@ -79,6 +84,11 @@ const resolvers = {
 
         return isTitleMatch || isBodyMatch;
       });
+    },
+  },
+  Post: {
+    author(parent) {
+      return users.find((user) => user.id === parent.authorId);
     },
   },
 };
