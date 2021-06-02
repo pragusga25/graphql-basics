@@ -3,13 +3,44 @@ import { GraphQLServer } from 'graphql-yoga';
 // String, Boolean, Int, Float, ID
 
 // Type definitions (schema)
+const users = [
+  { id: 'pou1021219', name: 'Taufik1', email: 'pou1@email.com', age: 19 },
+  { id: 'pou102139', name: 'Taufik2', email: 'pou2@email.com' },
+  { id: 'pou102119', name: 'Taufik3', email: 'pou3@email.com', age: 14 },
+  { id: 'pou102944', name: 'Taufik4', email: 'pou4@email.com' },
+];
+
+const posts = [
+  {
+    id: 'po123',
+    title: 'The Journey',
+    body: 'The awesome journey',
+    published: true,
+  },
+  {
+    id: 'poda2123',
+    title: 'The Coolest',
+    body: 'So Cool',
+    published: false,
+  },
+  {
+    id: 'po12d2a3',
+    title: 'The Cules',
+    body: 'An idiot',
+    published: false,
+  },
+  {
+    id: 'dapwo123',
+    title: 'The Alchemist',
+    body: 'The fabel',
+    published: true,
+  },
+];
+
 const typeDefs = `
   type Query{
-    sayHi(name: String!, friendName: String): String!
-    add(numbers: [Float!]!): Float!
-    grades: [Int!]!
-    me: User!
-    post: Post!
+    users(query: String): [User!]!
+    posts: [Post!]!
   }
   
   type User{
@@ -30,36 +61,14 @@ const typeDefs = `
 // Resolvers
 const resolvers = {
   Query: {
-    sayHi(parent, args, ctx, info) {
-      if (args.name && args.friendName)
-        return `Hi ${args.name} and ${args.friendName}`;
-      else 'Hi everyone';
-    },
-    add(parent, args, ctx, info) {
-      if (!args.numbers) {
-        return 0;
-      }
-      return args.numbers.reduce(
-        (accumulator, currentValue) => accumulator + currentValue
+    users(parents, args, ctx, info) {
+      if (!args.query) return users;
+      return users.filter(
+        (user) => user.name.toLowerCase() === args.query.toLowerCase()
       );
     },
-    grades(parent, args, ctx, info) {
-      return [100, 80, 92, 93];
-    },
-    me() {
-      return {
-        id: 'us123',
-        name: 'Taufik Pragusga',
-        email: 'myemail@gmail.com',
-      };
-    },
-    post() {
-      return {
-        id: 'po123',
-        title: 'The Journey',
-        body: 'The awesome journey',
-        published: true,
-      };
+    posts() {
+      return posts;
     },
   },
 };
