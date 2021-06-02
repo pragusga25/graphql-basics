@@ -41,10 +41,18 @@ const posts = [
   },
 ];
 
+const comments = [
+  { id: 'c1', text: 'That is cool book' },
+  { id: 'c2', text: 'That is bad book' },
+  { id: 'c3', text: 'That is horrible book' },
+  { id: 'c4', text: 'That is awesome book' },
+];
+
 const typeDefs = `
   type Query{
     users(query: String): [User!]!
     posts(query: String): [Post!]!
+    comments: [Comment!]
   }
   
   type User{
@@ -61,6 +69,11 @@ const typeDefs = `
     body: String!
     published: Boolean!
     author: User!
+  }
+
+  type Comment{
+    id: ID!
+    text: String!
   }
 `;
 
@@ -85,6 +98,9 @@ const resolvers = {
 
         return isTitleMatch || isBodyMatch;
       });
+    },
+    comments() {
+      return comments;
     },
   },
   Post: {
