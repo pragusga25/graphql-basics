@@ -40,7 +40,7 @@ const posts = [
 const typeDefs = `
   type Query{
     users(query: String): [User!]!
-    posts: [Post!]!
+    posts(query: String): [Post!]!
   }
   
   type User{
@@ -63,12 +63,22 @@ const resolvers = {
   Query: {
     users(parents, args, ctx, info) {
       if (!args.query) return users;
+
       return users.filter(
         (user) => user.name.toLowerCase() === args.query.toLowerCase()
       );
     },
-    posts() {
-      return posts;
+    posts(parents, args, ctx, info) {
+      if (!args.query) return posts;
+
+      return posts.filter((post) => {
+        const input = args.query.toLowerCase();
+
+        const isTitleMatch = post.title.toLowerCase().includes(input);
+        const isBodyMatch = post.body.toLowerCase().includes(input);
+
+        return isTitleMatch || isBodyMatch;
+      });
     },
   },
 };
