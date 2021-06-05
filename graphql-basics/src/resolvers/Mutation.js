@@ -54,7 +54,12 @@ const Mutation = {
     };
 
     db.comments.push(comment);
-    pubsub.publish(`comment ${args.data.postId}`, { comment });
+    pubsub.publish(`comment ${args.data.postId}`, {
+      comment: {
+        mutation: 'CREATED',
+        data: comment,
+      },
+    });
 
     return comment;
   },
@@ -120,12 +125,19 @@ const Mutation = {
     return post;
   },
 
-  udpateComment(_, { id, data }, { db }) {
+  udpateComment(_, { id, data }, { db, pubsub }) {
     const comment = db.comments.find((comment) => comment.id === id);
 
     if (!comment) throw new Error('Comment not found');
 
     if (typeof data.text === 'string') comment.text = data.text;
+
+    pubsub.publish(`comment ${comment.postId}`, {
+      comment: {
+        mutation: 'UPDATED',
+        data: comment,
+      },
+    });
 
     return comment;
   },
@@ -177,16 +189,23 @@ const Mutation = {
     return deletedUser[0];
   },
 
-  deleteComment(_, args, { db }) {
+  deleteComment(_, args, { db, pubsub }) {
     const commentIndex = db.comments.findIndex(
       (comment) => comment.id === args.id
     );
 
     if (commentIndex === -1) throw new Error('Comment not found');
 
-    const deletedComment = db.comments.splice(commentIndex, 1);
+    const [deletedComment] = db.comments.splice(commentIndex, 1);
 
-    return deletedComment[0];
+    pubsub.publish(`comment ${deletedComment.postId}`, {
+      comment: {
+        mutation: 'DELETED',
+        data: deletedComment,
+      },
+    });
+
+    return deletedComment;
   },
 };
 
