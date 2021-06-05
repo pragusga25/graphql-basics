@@ -53,6 +53,10 @@ input UpdateCommentInput {
   text: String
 }
 
+type Subscription {
+  count: Int!
+}
+
 type User {
   id: ID!
   name: String!

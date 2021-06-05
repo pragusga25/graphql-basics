@@ -82,7 +82,6 @@ const Mutation = {
 
   udpateComment(_, { id, data }, { db }) {
     const comment = db.comments.find((comment) => comment.id === id);
-    console.log(comment);
 
     if (!comment) throw new Error('Comment not found');
 
