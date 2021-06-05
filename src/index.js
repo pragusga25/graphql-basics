@@ -5,36 +5,36 @@ import { v4 as uuidv4 } from 'uuid';
 
 // Type definitions (schema)
 const users = [
-  { id: 'pou1021219', name: 'Taufik1', email: 'pou1@email.com', age: 19 },
-  { id: 'pou102139', name: 'Taufik2', email: 'pou2@email.com' },
-  { id: 'pou102119', name: 'Taufik3', email: 'pou3@email.com', age: 14 },
-  { id: 'pou102944', name: 'Taufik4', email: 'pou4@email.com' },
+  { id: '1', name: 'Taufik1', email: 'pou1@email.com', age: 19 },
+  { id: '2', name: 'Taufik2', email: 'pou2@email.com' },
+  { id: '3', name: 'Taufik3', email: 'pou3@email.com', age: 14 },
+  { id: '4', name: 'Taufik4', email: 'pou4@email.com' },
 ];
 
 const posts = [
   {
-    id: 'po123',
+    id: '1',
     title: 'The Journey',
     body: 'The awesome journey',
     published: true,
     authorId: 'pou1021219',
   },
   {
-    id: 'poda2123',
+    id: '2',
     title: 'The Coolest',
     body: 'So Cool',
     published: false,
     authorId: 'pou1021219',
   },
   {
-    id: 'po12d2a3',
+    id: '3',
     title: 'The Cules',
     body: 'An idiot',
     published: false,
     authorId: 'pou102119',
   },
   {
-    id: 'dapwo123',
+    id: '4',
     title: 'The Alchemist',
     body: 'The fabel',
     published: true,
@@ -44,25 +44,25 @@ const posts = [
 
 const comments = [
   {
-    id: 'c1',
+    id: '1',
     text: 'That is cool book',
     authorId: 'pou102944',
     postId: 'dapwo123',
   },
   {
-    id: 'c2',
+    id: '2',
     text: 'That is bad book',
     authorId: 'pou102944',
     postId: 'po123',
   },
   {
-    id: 'c3',
+    id: '3',
     text: 'That is horrible book',
     authorId: 'pou1021219',
     postId: 'poda2123',
   },
   {
-    id: 'c4',
+    id: '4',
     text: 'That is awesome book',
     authorId: 'pou102139',
     postId: 'dapwo123',
@@ -79,6 +79,7 @@ const typeDefs = `
   type Mutation{
     createUser(name: String!, email: String!, age: Int): User!
     createPost(title: String!, body: String!, published: Boolean!, authorId: ID!): Post!
+    createComment(text: String!, postId: ID!, authorId: ID!): Comment!
   }
   
   type User{
@@ -168,10 +169,26 @@ const resolvers = {
 
       posts.push(post);
 
-      
-
       return post;
     },
+
+    createComment(_, args){
+      const userExists = users.some(user => user.id === args.authorId)
+      const postExists = posts.some(post => post.id === args.postId && post.published)
+
+      if(!userExists || !postExists) throw new Error("Unable to find user and post")
+
+      const comment = {
+        id: uuidv4(),
+        text: args.text,
+        authorId: args.authorId,
+        postId: args.postId
+      }
+
+      comments.push(comment)
+
+      return comment
+    }
   },
 
   Post: {
