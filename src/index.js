@@ -4,68 +4,68 @@ import { v4 as uuidv4 } from 'uuid';
 // String, Boolean, Int, Float, ID
 
 // Type definitions (schema)
-const users = [
+let users = [
   { id: '1', name: 'Taufik1', email: 'pou1@email.com', age: 19 },
   { id: '2', name: 'Taufik2', email: 'pou2@email.com' },
   { id: '3', name: 'Taufik3', email: 'pou3@email.com', age: 14 },
   { id: '4', name: 'Taufik4', email: 'pou4@email.com' },
 ];
 
-const posts = [
+let posts = [
   {
     id: '1',
     title: 'The Journey',
     body: 'The awesome journey',
     published: true,
-    authorId: 'pou1021219',
+    authorId: '1',
   },
   {
     id: '2',
     title: 'The Coolest',
     body: 'So Cool',
     published: false,
-    authorId: 'pou1021219',
+    authorId: '1',
   },
   {
     id: '3',
     title: 'The Cules',
     body: 'An idiot',
     published: false,
-    authorId: 'pou102119',
+    authorId: '2',
   },
   {
     id: '4',
     title: 'The Alchemist',
     body: 'The fabel',
     published: true,
-    authorId: 'pou102944',
+    authorId: '3',
   },
 ];
 
-const comments = [
+let comments = [
   {
     id: '1',
     text: 'That is cool book',
-    authorId: 'pou102944',
-    postId: 'dapwo123',
+    authorId: '1',
+    postId: '1',
   },
   {
     id: '2',
     text: 'That is bad book',
-    authorId: 'pou102944',
-    postId: 'po123',
+    authorId: '1',
+    postId: '2',
   },
   {
     id: '3',
     text: 'That is horrible book',
-    authorId: 'pou1021219',
-    postId: 'poda2123',
+    authorId: '1',
+    postId: '2',
   },
   {
     id: '4',
     text: 'That is awesome book',
-    authorId: 'pou102139',
-    postId: 'dapwo123',
+    authorId: '3',
+    postId: '1',
   },
 ];
 
@@ -80,6 +80,8 @@ const typeDefs = `
     createUser(data: CreateUserInput!): User!
     createPost(data: CreatePostInput!): Post!
     createComment(data: CreateCommentInput!): Comment!
+
+    deleteUser(id: ID!): User!
   }
 
   input CreateUserInput{
@@ -161,7 +163,7 @@ const resolvers = {
 
       const user = {
         id: uuidv4(),
-        ...args.data
+        ...args.data,
       };
 
       users.push(user);
@@ -176,7 +178,7 @@ const resolvers = {
 
       const post = {
         id: uuidv4(),
-        ...args.data
+        ...args.data,
       };
 
       posts.push(post);
@@ -184,21 +186,48 @@ const resolvers = {
       return post;
     },
 
-    createComment(_, args){
-      const userExists = users.some(user => user.id === args.data.authorId)
-      const postExists = posts.some(post => post.id === args.data.postId && post.published)
+    createComment(_, args) {
+      const userExists = users.some((user) => user.id === args.data.authorId);
+      const postExists = posts.some(
+        (post) => post.id === args.data.postId && post.published
+      );
 
-      if(!userExists || !postExists) throw new Error("Unable to find user and post")
+      if (!userExists || !postExists)
+        throw new Error('Unable to find user and post');
 
       const comment = {
         id: uuidv4(),
-        ...args.data
-      }
+        ...args.data,
+      };
 
-      comments.push(comment)
+      comments.push(comment);
 
-      return comment
-    }
+      return comment;
+    },
+
+    deleteUser(_, args) {
+      const userIndex = users.findIndex((user) => user.id === args.id);
+
+      if (userIndex === -1) throw new Error('User not found');
+
+      const deletedUser = users.splice(userIndex, 1)[0];
+
+      posts = posts.filter((post) => {
+        const match = post.authorId === args.id;
+
+        if (match) {
+          comments = comments.filter((comment) => comment.postId !== post.id);
+        }
+
+        comments = comments.filter((comment) => comment.authorId !== args.id);
+
+        return !match;
+      });
+
+      console.log(deletedUser);
+
+      return deletedUser;
+    },
   },
 
   Post: {
