@@ -4,7 +4,7 @@
   "description": "��#\u0000 \u0000g\u0000r\u0000a\u0000p\u0000q\u0000h\u0000l\u0000-\u0000b\u0000a\u0000s\u0000i\u0000c\u0000s\u0000\r\u0000 \u0000",
   "main": "index.js",
   "scripts": {
-    "start": "nodemon src/index.js --exec babel-node"
+    "start": "nodemon src/index.js --ext js,graphql --exec babel-node"
   },
   "repository": {
     "type": "git",
