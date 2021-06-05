@@ -77,9 +77,28 @@ const typeDefs = `
   }
 
   type Mutation{
-    createUser(name: String!, email: String!, age: Int): User!
-    createPost(title: String!, body: String!, published: Boolean!, authorId: ID!): Post!
-    createComment(text: String!, postId: ID!, authorId: ID!): Comment!
+    createUser(data: CreateUserInput!): User!
+    createPost(data: CreatePostInput!): Post!
+    createComment(data: CreateCommentInput!): Comment!
+  }
+
+  input CreateUserInput{
+    name: String!
+    email: String!
+    age: Int
+  }
+
+  input CreatePostInput{
+    title: String!
+    body: String!
+    published: Boolean!
+    authorId: ID!
+  }
+
+  input CreateCommentInput{
+    text: String!
+    postId: ID!
+    authorId: ID!
   }
   
   type User{
@@ -137,12 +156,12 @@ const resolvers = {
 
   Mutation: {
     createUser(_, args) {
-      const emailTaken = users.some((user) => user.email === args.email);
+      const emailTaken = users.some((user) => user.email === args.data.email);
       if (emailTaken) throw new Error('Email taken');
 
       const user = {
         id: uuidv4(),
-        ...args
+        ...args.data
       };
 
       users.push(user);
@@ -151,13 +170,13 @@ const resolvers = {
     },
 
     createPost(_, args) {
-      const userExists = users.some((user) => user.id === args.authorId);
+      const userExists = users.some((user) => user.id === args.data.authorId);
 
       if (!userExists) throw new Error('User not found');
 
       const post = {
         id: uuidv4(),
-        ...args
+        ...args.data
       };
 
       posts.push(post);
@@ -166,14 +185,14 @@ const resolvers = {
     },
 
     createComment(_, args){
-      const userExists = users.some(user => user.id === args.authorId)
-      const postExists = posts.some(post => post.id === args.postId && post.published)
+      const userExists = users.some(user => user.id === args.data.authorId)
+      const postExists = posts.some(post => post.id === args.data.postId && post.published)
 
       if(!userExists || !postExists) throw new Error("Unable to find user and post")
 
       const comment = {
         id: uuidv4(),
-        ...args
+        ...args.data
       }
 
       comments.push(comment)
