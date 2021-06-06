@@ -1,1 +1,1 @@
-﻿# Graphql Prisma
+﻿# Graphql Basics
