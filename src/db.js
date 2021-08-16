@@ -59,7 +59,7 @@ const comments = [
     id: '4',
     text: 'That is awesome book',
     authorId: '3',
-    postId: '1',
+    postId: '2',
   },
 ];
 
